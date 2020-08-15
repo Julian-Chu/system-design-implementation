@@ -3,6 +3,7 @@ module github.com/Julian-Chu/system-design-implementation/golang/urlshort-redis
 go 1.14
 
 require (
+	github.com/go-redis/redis/v8 v8.0.0-beta.7
 	github.com/gorilla/mux v1.7.4
 	github.com/justinas/alice v1.2.0
 	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect

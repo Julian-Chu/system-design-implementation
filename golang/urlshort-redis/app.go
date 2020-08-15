@@ -16,6 +16,7 @@ import (
 type App struct {
 	Router      *mux.Router
 	Middlewares *Middleware
+	config      *Env
 }
 
 type shortenReq struct {
@@ -34,11 +35,13 @@ func (a *App) InitializeRoutes() {
 	a.Router.Handle("/api/{shortlink:[a-zA-Z0-9]{1,11}}", m.ThenFunc(a.redirect)).Methods("GET")
 }
 
-func (a *App) Initialize() {
+func (a *App) Initialize(e *Env) {
 	// set log formatter
 	// LstdFlags: print time and date
 	// Lshortfile: line number, file name
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
+
+	a.config = e
 	a.Router = mux.NewRouter()
 	a.Middlewares = &Middleware{}
 	a.InitializeRoutes()
