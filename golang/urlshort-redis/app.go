@@ -32,7 +32,7 @@ func (a *App) InitializeRoutes() {
 	m := alice.New(a.Middlewares.LoggingHandler, a.Middlewares.RecoverHandler)
 	a.Router.Handle("/api/shorten", m.ThenFunc(a.createShortLink)).Methods("POST")
 	a.Router.Handle("/api/info", m.ThenFunc(a.getShortLinkInfo)).Methods("GET")
-	a.Router.Handle("/api/{shortlink:[a-zA-Z0-9]{1,11}}", m.ThenFunc(a.redirect)).Methods("GET")
+	a.Router.Handle("/{shortlink:[a-zA-Z0-9]{1,11}}", m.ThenFunc(a.redirect)).Methods("GET")
 }
 
 func (a *App) Initialize(e *Env) {
@@ -45,6 +45,10 @@ func (a *App) Initialize(e *Env) {
 	a.Router = mux.NewRouter()
 	a.Middlewares = &Middleware{}
 	a.InitializeRoutes()
+}
+
+type shortlinkResp struct {
+	Shortlink string
 }
 
 func (a *App) createShortLink(w http.ResponseWriter, r *http.Request) {
@@ -61,7 +65,13 @@ func (a *App) createShortLink(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Printf("%v\n", req)
+	//fmt.Printf("%v\n", req)
+	s, err := a.config.S.Shorten(req.URL, req.ExpirationInMinutes)
+	if err != nil {
+		respondWithError(w, err)
+	} else {
+		respondWithJSON(w, http.StatusCreated, shortlinkResp{Shortlink: s})
+	}
 }
 
 func respondWithError(w http.ResponseWriter, err error) {
@@ -85,15 +95,28 @@ func respondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
 func (a *App) getShortLinkInfo(w http.ResponseWriter, r *http.Request) {
 	vals := r.URL.Query()
 	s := vals.Get("shortlink")
-	fmt.Printf("%s\n", s)
-	// simulate panic
-	panic(s)
+	//fmt.Printf("%s\n", s)
+	// //simulate panic
+	//panic(s)
+
+	d, err := a.config.S.ShortlinkInfo(s)
+	if err != nil {
+		respondWithError(w, err)
+	} else {
+		respondWithJSON(w, http.StatusOK, d)
+	}
 }
 
 // Run starts listen and server
 func (a *App) redirect(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	fmt.Printf("%s\n", vars["shortlink"])
+	//fmt.Printf("%s\n", vars["shortlink"])
+	u, err := a.config.S.Unshorten(vars["shortlink"])
+	if err != nil {
+		respondWithError(w, err)
+	} else {
+		http.Redirect(w, r, u, http.StatusTemporaryRedirect)
+	}
 }
 
 func (a App) Run(addr string) {

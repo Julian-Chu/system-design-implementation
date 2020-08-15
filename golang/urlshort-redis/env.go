@@ -13,7 +13,7 @@ type Env struct {
 func getEnv() *Env {
 	addr := os.Getenv("APP_REDIS_ADDR")
 	if addr == "" {
-		addr = "locahost:6379"
+		addr = "localhost:6379"
 	}
 
 	passwd := os.Getenv("APP_REDIS_PASSWD")
@@ -23,7 +23,7 @@ func getEnv() *Env {
 
 	dbS := os.Getenv("APP_REDIS_DB")
 	if dbS == "" {
-		dbS = ""
+		dbS = "0"
 	}
 	db, err := strconv.Atoi(dbS)
 	if err != nil {

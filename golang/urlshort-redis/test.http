@@ -1,8 +1,8 @@
-GET http://localhost:8000/A
+GET http://localhost:8000/2
 Accept: application/json
 
 ###
-GET http://localhost:8000/api/info
+GET http://localhost:8000/api/info?shortlink=2
 Accept: application/json
 
 ###
@@ -10,7 +10,7 @@ POST http://localhost:8000/api/shorten
 Content-Type: application/json
 
 {
-  "url": "www.example.com",
+  "url": "https://www.example.com",
   "expiration_in_minutes": 0
 }
 
@@ -19,7 +19,7 @@ POST http://localhost:8000/api/shorten
 Content-Type: application/json
 
 {
-  "url": "www.example.com",
+  "url": "https://www.example.com",
   "expiration_in_minutes": -1
 }
 

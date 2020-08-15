@@ -7,7 +7,10 @@ import (
 	"fmt"
 	"time"
 
+	"crypto/sha1"
+
 	"github.com/go-redis/redis/v8"
+	"github.com/mattheath/base62"
 )
 
 const (
@@ -92,6 +95,10 @@ func (r RedisCli) Shorten(url string, exp int64) (string, error) {
 	return eid, nil
 }
 
+func toSha1(str string) string {
+	return string(sha1.New().Sum([]byte(str)))
+}
+
 // ShortlinkInfo returns the details of the shortlink
 func (r RedisCli) ShortlinkInfo(eid string) (interface{}, error) {
 	d, err := r.Cli.Get(context.Background(), fmt.Sprintf(ShortlinkDetailKey, eid)).Result()
@@ -107,10 +114,10 @@ func (r RedisCli) ShortlinkInfo(eid string) (interface{}, error) {
 // Unshorten convert shortlink to url
 func (r RedisCli) Unshorten(eid string) (string, error) {
 	url, err := r.Cli.Get(context.Background(), fmt.Sprintf(ShortlinkKey, eid)).Result()
-	if err != redis.Nil {
+	if err == redis.Nil {
 		return "", StatusError{404, err}
-	} else if err == nil {
-		return "", nil
+	} else if err != nil {
+		return "", err
 	} else {
 		return url, nil
 	}
