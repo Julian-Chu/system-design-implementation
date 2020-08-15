@@ -1,0 +1,12 @@
+GET http://localhost:8000/A
+Accept: application/json
+
+###
+POST http://localhost:8000/api/shorten
+Content-Type: application/json
+
+{
+  "url": "www.example.com"
+}
+
+###
