@@ -6,7 +6,17 @@ POST http://localhost:8000/api/shorten
 Content-Type: application/json
 
 {
-  "url": "www.example.com"
+  "url": "www.example.com",
+  "expiration_in_minutes": 0
+}
+
+###
+POST http://localhost:8000/api/shorten
+Content-Type: application/json
+
+{
+  "url": "www.example.com",
+  "expiration_in_minutes": -1
 }
 
 ###
