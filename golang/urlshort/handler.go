@@ -13,12 +13,13 @@ import (
 // http.Handler will be called instead.
 func MapHandler(pathsToUrls map[string]string, fallback http.Handler) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		path:= r.URL.Path
-		if url, ok:= pathsToUrls[path];ok{
-            http.Redirect(w,r,url, http.StatusSeeOther)
+		path := r.URL.Path
+		if url, ok := pathsToUrls[path]; ok {
+			//http.Redirect(w,r,url, http.StatusSeeOther)
+			http.Redirect(w, r, url, http.StatusFound) // don't use 301, 301 will keep the url in client
 			return
 		}
-		fallback.ServeHTTP(w,r)
+		fallback.ServeHTTP(w, r)
 	}
 }
 
@@ -68,5 +69,5 @@ func buildMap(shortUrls []shortUrl) map[string]string {
 
 type shortUrl struct {
 	Path string `yaml:"path"`
-	Url string `yaml:"url"`
+	Url  string `yaml:"url"`
 }
